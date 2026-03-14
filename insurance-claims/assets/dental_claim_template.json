@@ -1,0 +1,49 @@
+{
+  "usageIndicator": "P",
+  "tradingPartnerServiceId": "REPLACE_PAYER_ID",
+  "tradingPartnerName": "REPLACE_PAYER_NAME",
+  "submitter": {
+    "organizationName": "REPLACE_SUBMITTER_ORG",
+    "submitterIdentification": "REPLACE_SUBMITTER_ID",
+    "contactInformation": {
+      "name": "REPLACE_CONTACT_NAME",
+      "phoneNumber": "5552223333"
+    }
+  },
+  "receiver": {
+    "organizationName": "REPLACE_RECEIVER_NAME"
+  },
+  "subscriber": {
+    "memberId": "REPLACE_MEMBER_ID",
+    "paymentResponsibilityLevelCode": "P",
+    "firstName": "REPLACE_FIRST",
+    "lastName": "REPLACE_LAST",
+    "gender": "M",
+    "dateOfBirth": "19800101"
+  },
+  "billing": {
+    "providerType": "BillingProvider",
+    "npi": "1999999984",
+    "organizationName": "REPLACE_DENTAL_PRACTICE"
+  },
+  "claimInformation": {
+    "claimFilingCode": "CI",
+    "patientControlNumber": "REPLACE_PCN_17_MAX",
+    "claimChargeAmount": "250.00",
+    "claimFrequencyCode": "1",
+    "serviceLines": [
+      {
+        "serviceDate": "20240101",
+        "providerControlNumber": "LINECTRL001",
+        "dentalService": {
+          "procedureCode": "D2740",
+          "lineItemChargeAmount": "250.00",
+          "serviceUnitCount": "1",
+          "tooth": {
+            "toothNumber": "14"
+          }
+        }
+      }
+    ]
+  }
+}

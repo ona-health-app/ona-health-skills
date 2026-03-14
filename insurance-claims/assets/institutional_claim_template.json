@@ -1,0 +1,52 @@
+{
+  "usageIndicator": "P",
+  "tradingPartnerServiceId": "REPLACE_PAYER_ID",
+  "tradingPartnerName": "REPLACE_PAYER_NAME",
+  "submitter": {
+    "organizationName": "REPLACE_SUBMITTER_ORG",
+    "submitterIdentification": "REPLACE_SUBMITTER_ID",
+    "contactInformation": {
+      "name": "REPLACE_CONTACT_NAME",
+      "phoneNumber": "5552223333"
+    }
+  },
+  "receiver": {
+    "organizationName": "REPLACE_RECEIVER_NAME"
+  },
+  "subscriber": {
+    "memberId": "REPLACE_MEMBER_ID",
+    "paymentResponsibilityLevelCode": "P",
+    "firstName": "REPLACE_FIRST",
+    "lastName": "REPLACE_LAST",
+    "gender": "M",
+    "dateOfBirth": "19800101"
+  },
+  "billing": {
+    "providerType": "BillingProvider",
+    "npi": "1999999984",
+    "organizationName": "REPLACE_FACILITY_NAME"
+  },
+  "claimInformation": {
+    "claimFilingCode": "CI",
+    "patientControlNumber": "REPLACE_PCN_17_MAX",
+    "claimChargeAmount": "500.00",
+    "claimFrequencyCode": "1",
+    "admissionDateAndHour": "2024010112",
+    "statementDates": {
+      "statementBeginDate": "20240101",
+      "statementEndDate": "20240101"
+    },
+    "serviceLines": [
+      {
+        "serviceDate": "20240101",
+        "lineItemControlNumber": "LINECTRL001",
+        "institutionalService": {
+          "revenueCode": "0450",
+          "lineItemChargeAmount": "500.00",
+          "measurementUnit": "UN",
+          "serviceUnitCount": "1"
+        }
+      }
+    ]
+  }
+}
