@@ -3,24 +3,42 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "I have an EOB (explanation of benefits) PDF from my insurer. Extract the claim number, service date, billed amount, allowed amount, and patient responsibility, and put them into a simple table or CSV.",
-      "expected_output": "A table or CSV with claim number, service date, billed amount, allowed amount, and patient responsibility.",
+      "prompt": "Validate a claim payload before submission to Aetna (payer ID 60054). PCN: `PCN-2026-VeryLongControlNumber`, NPI: 1999999984, billed amount $150.00 for CPT 99213 on 2026-03-10.",
+      "expected_output": "Validation fails with clear errors: PCN too long (>17 chars) and contains hyphens. Warning about reserved X12 delimiter. A corrected PCN example is provided. Claim is blocked from submission.",
       "files": [],
-      "expectations": []
+      "expectations": [
+        "Output uses the skill's four-section format: 'What I Did', 'Result', 'Why', and 'Next Actions'",
+        "Validation identifies the PCN length violation (>17 chars) with a specific character count",
+        "Validation identifies non-alphanumeric characters (hyphens) in the PCN as a separate error",
+        "Output includes a concrete example of a valid corrected PCN (alphanumeric, ≤17 chars)",
+        "Output explicitly warns not to submit the claim until the PCN is corrected"
+      ]
     },
     {
       "id": 2,
-      "prompt": "Our clinic has a batch of claims in claims_batch.xlsx. For each claim, determine whether it looks complete for submission (required fields present, valid codes, no obvious errors). Output a checklist result per claim.",
-      "expected_output": "A per-claim completeness checklist with pass/fail or missing-field notes.",
+      "prompt": "Submit a professional medical claim for patient PCN20260310A to Aetna (60054) in test mode. Billing NPI: 1467892345, rendering NPI: 1326054421, member ID: AET-123456789, service date: 2026-03-10, CPT: 99214, charge: $195.00, diagnosis: Z00.00.",
+      "expected_output": "Preflight performed, payload constructed and validated, claim submitted in test mode with usageIndicator T. Result includes correlationId and patientControlNumber. Next actions cover 277CA monitoring and ERA retrieval.",
       "files": [],
-      "expectations": []
+      "expectations": [
+        "Preflight checklist is explicitly performed before constructing the claim payload",
+        "Payload uses 'usageIndicator: T' for test mode",
+        "Submission result includes both correlationId and patientControlNumber",
+        "Post-submission guidance mentions monitoring for 277CA acknowledgment",
+        "Output notes that scripts are stubs and a real STEDI_API_KEY is needed for live use"
+      ]
     },
     {
       "id": 3,
-      "prompt": "A patient says their claim was denied with reason code 'CO 16'. Explain what that means in plain language and what steps they or the provider should take to resolve it.",
-      "expected_output": "A plain-language explanation of the denial reason and recommended next steps.",
+      "prompt": "Retrieve 835 ERA from Medicare Part B (payer ID 01192) for billing NPI 1234567890 using `retrieve_835era.py`, and produce a summary of paid/denied claims with adjustment code explanations.",
+      "expected_output": "ERA script executed. Summary includes at least one paid and one denied claim with specific CAS adjustment codes (CO/PR/OA). CO, PR, OA groups are explained with sub-codes. Numbered next actions tailored to actual ERA results.",
       "files": [],
-      "expectations": []
+      "expectations": [
+        "ERA script (retrieve_835era.py) was executed and its raw output is shown",
+        "Output includes at least one denied claim with a specific adjustment reason code (e.g., CO-97)",
+        "CO, PR, and OA adjustment group codes are all explained with specific sub-code examples",
+        "Output includes a per-claim summary table showing paid amounts and adjustment breakdowns",
+        "Output concludes with numbered next actions tailored to the specific ERA results"
+      ]
     }
   ]
 }
