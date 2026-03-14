@@ -32,6 +32,8 @@ def _load_dotenv() -> None:
 
 _load_dotenv()
 
+ELIGIBILITY_URL = "https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/eligibility/v3"
+
 BASE_URLS = {
     "professional": "https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/professionalclaims/v3/submission",
     "institutional": "https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/institutionalclaims/v2/submission",

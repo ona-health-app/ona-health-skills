@@ -37,6 +37,7 @@ Start with:
 - `references/stedi-overview.md`
 
 Then read only what is needed:
+- Eligibility checks (270/271): `references/stedi-eligibility.md`
 - Submission design: `references/stedi-submitting-claims.md`
 - Response handling: `references/stedi-claim-responses.md`
 - Practical constraints: `references/stedi-best-practices.md`
@@ -51,7 +52,7 @@ Then read only what is needed:
 Follow this sequence unless user explicitly requests otherwise.
 
 1. **Classify task**
-   - One of: `validate_claim`, `submit_claim`, `check_claim_status`, `lookup_payer`, `retrieve_277ca`, `retrieve_835era`, `poll_transactions`, `resubmit_or_void`.
+   - One of: `check_eligibility`, `validate_claim`, `submit_claim`, `check_claim_status`, `lookup_payer`, `retrieve_277ca`, `retrieve_835era`, `poll_transactions`, `resubmit_or_void`.
 
 2. **Run preflight requirements check**
    - Resolve payer ID.
@@ -62,6 +63,7 @@ Follow this sequence unless user explicitly requests otherwise.
    - Do not ask clinicians to choose an environment.
 
 3. **Use script stubs/interfaces (or real implementation when present)**
+   - `scripts/check_eligibility.py` ← real implementation, makes live API call
    - `scripts/validate_claim.py`
    - `scripts/submit_claim.py`
    - `scripts/check_claim_status.py`
@@ -87,6 +89,25 @@ Follow this sequence unless user explicitly requests otherwise.
 ## Script usage contract
 
 Use these interfaces unless user requests a different shape.
+
+- `check_eligibility.py` — **real API call** (270/271 eligibility)
+  - Quick usage: `python3 check_eligibility.py test` (sandbox, no patient data needed)
+  - Live usage: `python3 check_eligibility.py check --payer-id <ID> --npi <NPI> --provider-name <NAME> --member-id <MID> --subscriber-first <F> --subscriber-last <L> --subscriber-dob <YYYYMMDD> [--service-type-codes MH] [--dependent-first <F> --dependent-last <L> --dependent-dob <YYYYMMDD>]`
+  - Output:
+    ```json
+    {
+      "coverageActive": true,
+      "planName": "...",
+      "insuranceType": "PPO",
+      "groupNumber": "...",
+      "mentalHealth": { "covered": true, "copay": "$30", "coinsurance": null },
+      "deductible": { "total": "$1500", "remaining": "$800" },
+      "outOfPocketMax": "$4000",
+      "raw": {}
+    }
+    ```
+  - On error, returns `{ "coverageActive": false, "errors": [...], "raw": {} }`
+  - For payer IDs, service type codes, AAA error codes, and edge cases (Medicare, Medi-Cal, dependents): read `references/stedi-eligibility.md`
 
 - `validate_claim.py`
   - Input: JSON payload path
