@@ -8,12 +8,13 @@ Use this as a deterministic preflight checklist before any claim, status, attach
 
 For each workflow, evaluate requirements by tuple:
 
-`(provider, payer, transactionType)`
+`(provider, payer, transactionType, environment)`
 
 Where:
 - `provider` = NPI + provider identity data used in enrollment
 - `payer` = canonical payer ID from Stedi network/API
 - `transactionType` = one of `837P`, `837I`, `837D`, `835`, `276/277`, `275`
+- `environment` = test or production
 
 ## Authoritative sources
 
@@ -59,10 +60,9 @@ Run these before calling submission/status actions:
    - Ensure NPI and any payer-specific provider identifiers required by workflow are present.
    - For insurance discovery scenarios, optional Medicaid Provider ID can improve some payer results.
 
-5. **Apply execution mode automatically**
-   - Default to production behavior for clinician workflows.
-   - Switch to test mode only if the user explicitly requests testing, sandbox, or dry-run behavior.
-   - Keep this decision agent-side; do not ask clinicians to choose technical environments.
+5. **Check environment safety**
+   - Test and production credentials/config must not be mixed.
+   - Block if environment mismatch is detected.
 
 ## Suggested error contract
 

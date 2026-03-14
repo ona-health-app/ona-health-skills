@@ -15,6 +15,7 @@ No dependencies beyond the Python stdlib are required.
 import argparse
 import base64
 import json
+from typing import Optional
 import mimetypes
 import os
 import re
@@ -82,13 +83,18 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
             _find_runs_recursive(root, child, runs)
 
 
-def build_run(root: Path, run_dir: Path) -> dict | None:
+def build_run(root: Path, run_dir: Path):
     """Build a run dict with prompt, outputs, and grading data."""
     prompt = ""
     eval_id = None
 
-    # Try eval_metadata.json
-    for candidate in [run_dir / "eval_metadata.json", run_dir.parent / "eval_metadata.json"]:
+    # Try eval_metadata.json (run dir, config dir, or eval dir)
+    eval_metadata_candidates = [
+        run_dir / "eval_metadata.json",
+        run_dir.parent / "eval_metadata.json",
+        run_dir.parent.parent / "eval_metadata.json",
+    ]
+    for candidate in eval_metadata_candidates:
         if candidate.exists():
             try:
                 metadata = json.loads(candidate.read_text())
@@ -250,8 +256,8 @@ def load_previous_iteration(workspace: Path) -> dict[str, dict]:
 def generate_html(
     runs: list[dict],
     skill_name: str,
-    previous: dict[str, dict] | None = None,
-    benchmark: dict | None = None,
+    previous: Optional[dict] = None,
+    benchmark: Optional[dict] = None,
 ) -> str:
     """Generate the complete standalone HTML page with embedded data."""
     template_path = Path(__file__).parent / "viewer.html"
@@ -318,7 +324,7 @@ class ReviewHandler(BaseHTTPRequestHandler):
         skill_name: str,
         feedback_path: Path,
         previous: dict[str, dict],
-        benchmark_path: Path | None,
+        benchmark_path: Optional[Path],
         *args,
         **kwargs,
     ):

@@ -9,25 +9,35 @@ Deterministic, API-first insurance claims workflow skill.
 
 ## Setup check — do this first
 
-Before doing anything else, silently verify the Stedi API key is available.
+Before doing anything else, verify the Stedi API key is available:
 
-The user experience must stay clinician-friendly:
+```bash
+python -c "from scripts.config import get_api_key; print('API key OK')"
+```
 
-1. Run the key check yourself with tooling. Do not ask the user to run Python, shell, or setup scripts.
-2. If the key is present, continue without mentioning setup.
-3. If the key is missing, ask in plain language only:
-   - "I need your Stedi API key to connect to the insurance clearinghouse. You can find or create it at https://app.stedi.com/app/settings/api-keys. Paste it here and I will set it up for you."
-4. When the user shares the key, write it to repo-root `.env` as:
-   - `STEDI_API_KEY=<key>`
-5. Confirm setup is complete and continue the original claims task.
+Run this from the `insurance-claims/` directory. If it prints `API key OK`, proceed normally.
 
-Do not instruct clinicians to edit `.env`, export env vars, install dependencies, or run terminal commands.
+**If it raises an error** (key missing or empty), stop and guide the user through setup:
+
+1. **Get the key** — direct the user to [app.stedi.com/app/settings/api-keys](https://app.stedi.com/app/settings/api-keys).
+   - They'll need to log in (or create a free account at stedi.com).
+   - On the API Keys page, click **Create API key**, give it a name (e.g. `ona-health`), and copy the key.
+
+2. **Save the key** — open the `.env` file at the repo root (`ona-health-skills/.env`) and set:
+   ```
+   STEDI_API_KEY=your-key-here
+   ```
+   The `.env` file is gitignored, so the key will not be committed to source control.
+
+3. **Verify** — re-run the check above. Once it prints `API key OK`, continue with the original task.
+
+If the user is unsure where the repo root is, run `pwd` from the skill directory and show them the path.
 
 ## Operating principles
 
 1. Use **Stedi API + deterministic scripts** for validations, submissions, status checks, and retrieval workflows.
 2. Prefer structured JSON inputs/outputs. Avoid ad-hoc, ambiguous steps.
-3. Run a **requirements preflight** before claim actions (payer support, enrollment status, provider identifiers).
+3. Run a **requirements preflight** before claim actions (payer support, enrollment status, provider identifiers, environment safety).
 4. Fail fast with actionable remediation steps when prerequisites are not met.
 5. Keep PHI exposure minimal in logs and outputs.
 
@@ -42,7 +52,7 @@ Then read only what is needed:
 - Practical constraints: `references/stedi-best-practices.md`
 - Rejections/resubmissions lifecycle: `references/stedi-claim-lifecycle.md`
 - Enrollment/payer requirements: `references/stedi-enrollment-and-payers.md`
-- Test workflows (only when user explicitly asks for testing/dry run behavior): `references/stedi-testing.md`
+- Test workflows: `references/stedi-testing.md`
 - Attachments and MCP context: `references/stedi-attachments-and-mcp.md`
 - Provider/payer requirement preflight: `references/provider-requirements.md`
 
@@ -58,8 +68,8 @@ Follow this sequence unless user explicitly requests otherwise.
    - Verify transaction support.
    - Verify enrollment requirement and status.
    - Verify provider identifiers (NPI and any payer-specific requirements).
+   - Verify environment consistency (test vs production).
    - If any check fails, stop and return deterministic remediation.
-   - Do not ask clinicians to choose an environment.
 
 3. **Use script stubs/interfaces (or real implementation when present)**
    - `scripts/validate_claim.py`
@@ -77,12 +87,6 @@ Follow this sequence unless user explicitly requests otherwise.
 
 5. **Return structured output**
    - Include status summary, key identifiers, and next action suggestions.
-
-### Mode selection rule (user-facing UX)
-
-- Default to production behavior for real claim operations.
-- Switch to test behavior only when the user explicitly asks for test mode, dry run, sandbox, or validation-only execution.
-- Keep this automatic; do not ask clinicians to choose between technical environments.
 
 ## Script usage contract
 

@@ -1,13 +1,5 @@
 # Stedi Testing
 
-## Audience and usage
-
-This document is a technical reference for builders validating claims pipelines.
-
-- Use this document when the user explicitly asks for test mode, dry run, sandbox validation, or non-production workflow checks.
-- Do not use this document to question clinicians about technical environments during routine claims tasks.
-- For normal clinician workflows, default to production behavior automatically.
-
 ## Table of Contents
 - Test mode vs claim testing
 - Submitting test claims

@@ -39,6 +39,30 @@
         "Output includes a per-claim summary table showing paid amounts and adjustment breakdowns",
         "Output concludes with numbered next actions tailored to the specific ERA results"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "I need to send a claim for yesterday's office visit for one of my patients. It's Aetna and the procedure was a standard follow-up. Can you help me submit it?",
+      "expected_output": "Agent keeps the flow clinician-friendly, defaults behavior appropriately without asking the user to choose test vs production environments, and requests only missing claim details needed for submission.",
+      "files": [],
+      "expectations": [
+        "Response does not ask the user to choose or explain technical environments such as test, production, sandbox, or usageIndicator",
+        "Response stays clinician-friendly and asks only for practical missing claim details (patient/member/service/billing data)",
+        "Response states or implies that the assistant will handle technical submission defaults automatically",
+        "Response includes a clear next-step checklist to gather remaining claim inputs"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I'm trying to submit claims in this workspace for my clinic, but I don't know anything about coding setup. Please just help me get this working and submit a claim.",
+      "expected_output": "When credentials are needed, agent asks for the Stedi API key in plain language and offers to handle setup directly, without asking the user to run scripts or edit environment files.",
+      "files": [],
+      "expectations": [
+        "If API key setup is needed, response asks for the key in plain language and points the user to app.stedi.com/app/settings/api-keys",
+        "Response does not instruct the user to run Python or shell commands",
+        "Response does not instruct the user to manually edit .env files or export environment variables",
+        "Response explicitly says the assistant will handle setup steps after the key is provided"
+      ]
     }
   ]
 }
