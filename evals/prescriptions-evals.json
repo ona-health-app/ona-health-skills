@@ -1,0 +1,26 @@
+{
+  "skill_name": "prescriptions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a list of medications in a CSV (medications.csv) with columns: drug_name, strength, frequency, patient_id. Generate a short summary of potential drug–drug interactions and flag any that need a pharmacist review.",
+      "expected_output": "A summary document listing potential interactions and items flagged for pharmacist review.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "My doctor sent a prescription note that says 'Lisinopril 10mg once daily, refill x3'. Turn this into a structured prescription record I can send to the pharmacy (include drug, strength, sig, refills).",
+      "expected_output": "A structured prescription record suitable for pharmacy submission.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "I need to check if a patient's current prescriptions (listed in patient_meds.txt) are still within standard dosing guidelines. Highlight any that look like they might be off-label or need a dose review.",
+      "expected_output": "A review of each medication against dosing guidelines with flags for off-label or dose-review items.",
+      "files": [],
+      "expectations": []
+    }
+  ]
+}

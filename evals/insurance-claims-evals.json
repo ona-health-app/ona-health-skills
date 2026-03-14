@@ -1,0 +1,26 @@
+{
+  "skill_name": "insurance-claims",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have an EOB (explanation of benefits) PDF from my insurer. Extract the claim number, service date, billed amount, allowed amount, and patient responsibility, and put them into a simple table or CSV.",
+      "expected_output": "A table or CSV with claim number, service date, billed amount, allowed amount, and patient responsibility.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "Our clinic has a batch of claims in claims_batch.xlsx. For each claim, determine whether it looks complete for submission (required fields present, valid codes, no obvious errors). Output a checklist result per claim.",
+      "expected_output": "A per-claim completeness checklist with pass/fail or missing-field notes.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "A patient says their claim was denied with reason code 'CO 16'. Explain what that means in plain language and what steps they or the provider should take to resolve it.",
+      "expected_output": "A plain-language explanation of the denial reason and recommended next steps.",
+      "files": [],
+      "expectations": []
+    }
+  ]
+}

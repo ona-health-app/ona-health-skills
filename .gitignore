@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.venv/
+venv/
+env/
+
+# Eval run outputs (ephemeral)
+*-workspace/iteration-*/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reviewer feedback (downloaded from eval viewer)
+feedback.json
+
+# Packaged skill artifacts
+*.skill
