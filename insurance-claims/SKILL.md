@@ -7,6 +7,32 @@ description: Use this skill for insurance-claims operations with Stedi whenever 
 
 Deterministic, API-first insurance claims workflow skill.
 
+## Setup check — do this first
+
+Before doing anything else, verify the Stedi API key is available:
+
+```bash
+python -c "from scripts.config import get_api_key; print('API key OK')"
+```
+
+Run this from the `insurance-claims/` directory. If it prints `API key OK`, proceed normally.
+
+**If it raises an error** (key missing or empty), stop and guide the user through setup:
+
+1. **Get the key** — direct the user to [app.stedi.com/app/settings/api-keys](https://app.stedi.com/app/settings/api-keys).
+   - They'll need to log in (or create a free account at stedi.com).
+   - On the API Keys page, click **Create API key**, give it a name (e.g. `ona-health`), and copy the key.
+
+2. **Save the key** — open the `.env` file at the repo root (`ona-health-skills/.env`) and set:
+   ```
+   STEDI_API_KEY=your-key-here
+   ```
+   The `.env` file is gitignored, so the key will not be committed to source control.
+
+3. **Verify** — re-run the check above. Once it prints `API key OK`, continue with the original task.
+
+If the user is unsure where the repo root is, run `pwd` from the skill directory and show them the path.
+
 ## Operating principles
 
 1. Use **Stedi API + deterministic scripts** for validations, submissions, status checks, and retrieval workflows.
