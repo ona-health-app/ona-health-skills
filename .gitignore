@@ -30,4 +30,4 @@ Thumbs.db
 feedback.json
 
 # Packaged skill artifacts
-*.skill
+# *.skill
