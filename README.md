@@ -25,6 +25,8 @@ ona-health-skills/
 - **Workspaces**: Used by the skill-creator eval loop. Results go under `*-workspace/iteration-N/` (with-skill vs baseline outputs, grading, benchmark).
 - **evals/**: JSON files with test prompts. Copy or merge into `evals/evals.json` inside each skill when running the full eval workflow, or point the skill-creator at these files.
 
+For the full step-by-step development loop (draft, test, review, improve, package), see the [Skill Development Workflow](docs/skill-development-workflow.md).
+
 ## Quick start
 
 1. **Edit a skill**  
