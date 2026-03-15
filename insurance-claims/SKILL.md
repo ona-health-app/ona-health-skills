@@ -1,6 +1,6 @@
 ---
 name: insurance-claims
-description: Use this skill for insurance-claims operations with Stedi whenever the user asks to submit claims, validate claim payloads, check claim status, retrieve/interpret 277CA or 835 responses, troubleshoot payer/provider enrollment requirements, or build deterministic claims workflows. Trigger this skill even if the user does not say "Stedi" explicitly but mentions 837/835/277CA/ERA, payer IDs, claim rejection codes, claim resubmission, COB, or healthcare clearinghouse automation.
+description: Use this skill for insurance-claims operations with Stedi whenever the user asks to check patient eligibility, verify insurance coverage, submit claims, validate claim payloads, check claim status, retrieve/interpret 277CA or 835 responses, troubleshoot payer/provider enrollment requirements, or build deterministic claims workflows. Trigger this skill even if the user does not say "Stedi" explicitly but mentions eligibility checks, 270/271, insurance verification, benefits lookup, member coverage, deductible/copay/coinsurance inquiries, 837/835/277CA/ERA, payer IDs, claim rejection codes, claim resubmission, COB, or healthcare clearinghouse automation.
 ---
 
 # insurance-claims
@@ -37,7 +37,31 @@ Start with:
 - `references/stedi-overview.md`
 
 Then read only what is needed:
-- Eligibility checks (270/271): `references/stedi-eligibility.md`
+
+### Eligibility checking (270/271) — deep reference tree
+
+When the user asks to check eligibility, verify coverage, or anything related to 270/271:
+
+1. **Always start with:** `references/stedi-eligibility.md` — quick-reference for payer IDs, STCs, response parsing, and the `check_eligibility.py` script interface.
+
+2. **For building or debugging raw API calls:** `references/eligibility-check/eligibility-api-reference.md` — comprehensive endpoint docs including every request field, response field, and interpretation guide.
+
+3. **For constructing test requests:** Choose based on check type:
+   - Medical (subscriber or dependent): `references/eligibility-check/mock-requests-medical.md`
+   - Dental: `references/eligibility-check/mock-requests-dental.md`
+   - Error simulation: `references/eligibility-check/mock-requests-errors.md`
+
+4. **For payer-specific quirks and requirements:** `references/eligibility-check/provider-requirements.md` — per-payer behaviors, enrollment needs, and gotchas (Cigna dependent response quirk, CMS MBI/X-Forwarded-For, Medi-Cal portal credentials, BCBS home plan routing, etc.).
+
+5. **For payload templates:** Use the JSON templates in `assets/eligibility-check/`:
+   - `subscriber_check_template.json` — subscriber-only medical check
+   - `dependent_check_template.json` — dependent on subscriber's plan
+   - `dental_check_template.json` — dental eligibility check
+   - `mbi_lookup_template.json` — Medicare MBI lookup via SSN
+   - `medicaid_check_template.json` — Medicaid with portal credentials
+
+### Claims and other workflows
+
 - Submission design: `references/stedi-submitting-claims.md`
 - Response handling: `references/stedi-claim-responses.md`
 - Practical constraints: `references/stedi-best-practices.md`
@@ -47,18 +71,71 @@ Then read only what is needed:
 - Attachments and MCP context: `references/stedi-attachments-and-mcp.md`
 - Provider/payer requirement preflight: `references/provider-requirements.md`
 
+## Eligibility check workflow
+
+When the task is `check_eligibility`, follow this sequence:
+
+### 1. Gather required information
+
+Collect from the user (or from available context):
+- **Payer ID** — resolve from insurance card or payer name. Use `references/stedi-eligibility.md` for common IDs, or `scripts/lookup_payer.py` to search.
+- **Provider NPI** — 10-digit National Provider Identifier.
+- **Provider name** — organization or individual name.
+- **Patient info** — at minimum: `memberId`, `firstName`, `lastName`, `dateOfBirth`. All four together guarantee a payer response.
+- **Service type** — default `30` (general), use `MH` for mental health, `35` for dental, etc.
+
+### 2. Determine check type and select template
+
+| Scenario | Template | Key difference |
+|---|---|---|
+| Patient is the policyholder | `assets/eligibility-check/subscriber_check_template.json` | Patient info in `subscriber` |
+| Patient is a dependent (child/spouse) | `assets/eligibility-check/dependent_check_template.json` | Policyholder in `subscriber`, patient in `dependents` |
+| Dental coverage | `assets/eligibility-check/dental_check_template.json` | STC `35` instead of `30` |
+| Medicare (need MBI first) | `assets/eligibility-check/mbi_lookup_template.json` | SSN + address, payer `CMS` |
+| Medicaid | `assets/eligibility-check/medicaid_check_template.json` | Requires `portalUsername`/`portalPassword` |
+
+### 3. Check payer-specific requirements
+
+Read `references/eligibility-check/provider-requirements.md` for the target payer. Key things to verify:
+- Does this payer require enrollment before eligibility checks? (CMS does)
+- Does this payer need portal credentials? (Medi-Cal does)
+- Does this payer need special headers? (CMS needs `X-Forwarded-For`)
+- Any known quirks? (Cigna returns dependents in the subscriber object)
+
+### 4. Execute the check
+
+Use the `check_eligibility.py` script for standard checks, or build a raw API call using `references/eligibility-check/eligibility-api-reference.md` for advanced scenarios.
+
+### 5. Interpret the response
+
+Follow the interpretation steps in `references/eligibility-check/eligibility-api-reference.md`:
+1. Check `errors` array first — if non-empty, handle AAA errors per `references/eligibility-check/mock-requests-errors.md`.
+2. Confirm active coverage: look for `benefitsInformation` with `code: "1"`.
+3. Extract financials: deductible (`C`), OOP max (`G`), copay (`B`), coinsurance (`A`).
+4. Filter by `inPlanNetworkIndicatorCode: "Y"` for in-network values.
+5. Check `timeQualifierCode`: `23` = total, `29` = remaining.
+6. Check prior auth: `authOrCertIndicator: "Y"` means prior auth required.
+
+### 6. Return structured result
+
+Present the eligibility summary in the standard output format (see Output format section below).
+
+---
+
 ## Deterministic workflow
 
 Follow this sequence unless user explicitly requests otherwise.
 
 1. **Classify task**
    - One of: `check_eligibility`, `validate_claim`, `submit_claim`, `check_claim_status`, `lookup_payer`, `retrieve_277ca`, `retrieve_835era`, `poll_transactions`, `resubmit_or_void`.
+   - For `check_eligibility`, follow the Eligibility check workflow above.
 
 2. **Run preflight requirements check**
    - Resolve payer ID.
    - Verify transaction support.
    - Verify enrollment requirement and status.
    - Verify provider identifiers (NPI and any payer-specific requirements).
+   - For eligibility checks, also verify payer-specific requirements from `references/eligibility-check/provider-requirements.md`.
    - If any check fails, stop and return deterministic remediation.
    - Do not ask clinicians to choose an environment.
 

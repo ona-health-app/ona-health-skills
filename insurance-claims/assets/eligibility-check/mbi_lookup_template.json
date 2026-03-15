@@ -1,0 +1,22 @@
+{
+  "tradingPartnerServiceId": "CMS",
+  "provider": {
+    "organizationName": "<PROVIDER_ORG_NAME>",
+    "npi": "<PROVIDER_NPI_10_DIGITS>"
+  },
+  "subscriber": {
+    "firstName": "<PATIENT_FIRST_NAME>",
+    "lastName": "<PATIENT_LAST_NAME>",
+    "dateOfBirth": "<YYYYMMDD>",
+    "ssn": "<PATIENT_SSN_9_DIGITS>",
+    "address": {
+      "address1": "<STREET_ADDRESS>",
+      "city": "<CITY>",
+      "state": "<TWO_LETTER_STATE>",
+      "postalCode": "<ZIP_CODE>"
+    }
+  },
+  "encounter": {
+    "serviceTypeCodes": ["30"]
+  }
+}

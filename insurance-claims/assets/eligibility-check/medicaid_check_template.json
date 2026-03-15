@@ -1,0 +1,18 @@
+{
+  "tradingPartnerServiceId": "<MEDICAID_PAYER_ID>",
+  "portalUsername": "<PROVIDER_PORTAL_USERNAME>",
+  "portalPassword": "<PROVIDER_PORTAL_PASSWORD>",
+  "provider": {
+    "organizationName": "<PROVIDER_ORG_NAME>",
+    "npi": "<PROVIDER_NPI_10_DIGITS>"
+  },
+  "subscriber": {
+    "memberId": "<MEDICAID_RECIPIENT_ID>",
+    "firstName": "<PATIENT_FIRST_NAME>",
+    "lastName": "<PATIENT_LAST_NAME>",
+    "dateOfBirth": "<YYYYMMDD>"
+  },
+  "encounter": {
+    "serviceTypeCodes": ["30"]
+  }
+}

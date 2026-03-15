@@ -1,0 +1,24 @@
+{
+  "tradingPartnerServiceId": "<PAYER_ID>",
+  "provider": {
+    "organizationName": "<PROVIDER_ORG_NAME>",
+    "npi": "<PROVIDER_NPI_10_DIGITS>"
+  },
+  "subscriber": {
+    "memberId": "<POLICYHOLDER_MEMBER_ID>",
+    "firstName": "<POLICYHOLDER_FIRST_NAME>",
+    "lastName": "<POLICYHOLDER_LAST_NAME>",
+    "dateOfBirth": "<POLICYHOLDER_DOB_YYYYMMDD>"
+  },
+  "dependents": [
+    {
+      "firstName": "<DEPENDENT_FIRST_NAME>",
+      "lastName": "<DEPENDENT_LAST_NAME>",
+      "dateOfBirth": "<DEPENDENT_DOB_YYYYMMDD>",
+      "individualRelationshipCode": "<01_SPOUSE_OR_19_CHILD_OR_34_OTHER>"
+    }
+  ],
+  "encounter": {
+    "serviceTypeCodes": ["30"]
+  }
+}

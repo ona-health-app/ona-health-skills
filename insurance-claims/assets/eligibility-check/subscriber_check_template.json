@@ -1,0 +1,16 @@
+{
+  "tradingPartnerServiceId": "<PAYER_ID>",
+  "provider": {
+    "organizationName": "<PROVIDER_ORG_NAME>",
+    "npi": "<PROVIDER_NPI_10_DIGITS>"
+  },
+  "subscriber": {
+    "memberId": "<MEMBER_ID_FROM_INSURANCE_CARD>",
+    "firstName": "<PATIENT_FIRST_NAME>",
+    "lastName": "<PATIENT_LAST_NAME>",
+    "dateOfBirth": "<YYYYMMDD>"
+  },
+  "encounter": {
+    "serviceTypeCodes": ["30"]
+  }
+}
