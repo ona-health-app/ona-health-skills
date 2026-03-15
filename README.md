@@ -2,6 +2,9 @@
 
 Repository for building and maintaining two healthcare agent skills: **prescriptions** and **insurance-claims**. Uses the [skill-creator](.agents/skills/skill-creator/) workflow for drafting, testing, benchmarking, and packaging.
 
+[![Skill Development Workflow Demo](https://img.youtube.com/vi/Lvky1UPpVds/maxresdefault.jpg)](https://www.youtube.com/watch?v=Lvky1UPpVds)
+
+
 ## Directory layout
 
 ```
