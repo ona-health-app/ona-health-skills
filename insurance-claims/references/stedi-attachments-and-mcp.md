@@ -21,7 +21,7 @@ Before sending attachments:
 - verify transaction enrollment requirements for 275
 - validate attachment size/type constraints for target payer
 
-If unsupported, deterministic scripts should fail with a clear, actionable message and skip submission.
+If unsupported, fail with a clear, actionable message and skip submission.
 
 ## JSON attachment flow
 
@@ -34,7 +34,7 @@ Recommended deterministic sequence:
 3. Submit claim with attachment reference fields including attachment ID.
 
 Benefits:
-- cleaner script structure
+- cleaner workflow structure
 - explicit artifact IDs
 - easier retry/error recovery
 
@@ -63,7 +63,7 @@ Missing or inconsistent attachment identifiers are a common rejection source.
 Stedi MCP server is primarily for eligibility workflows (`search_for_payer`, `eligibility_check`) and troubleshooting those checks.
 
 For this insurance-claims skill:
-- keep claims submission/validation/status/retrieval in deterministic scripts
+- perform claims submission/validation/status/retrieval via direct Stedi API calls
 - optionally use MCP-enabled eligibility checks pre-claim to improve payer/member data quality before submission
 
 MCP should be treated as a complementary pre-claim tool, not the primary claims submission engine.

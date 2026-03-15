@@ -13,7 +13,7 @@
 
 Stedi is a healthcare clearinghouse platform for HIPAA X12 transactions. For claims, it helps you submit data in JSON or X12, validates the submission against industry and payer-specific rules, routes claims to payers, and returns response data in machine-friendly formats.
 
-For API workflows, Stedi can accept JSON and translate it to X12 for payer delivery. This is usually the best path for deterministic scripts that need predictable request and response handling.
+For API workflows, Stedi can accept JSON and translate it to X12 for payer delivery. This is usually the best path for deterministic workflows that need predictable request and response handling.
 
 ## Core claim transaction types
 
@@ -27,17 +27,17 @@ For API workflows, Stedi can accept JSON and translate it to X12 for payer deliv
 
 ## Submission methods
 
-- **API (recommended for this skill):** Deterministic, scriptable, supports JSON and raw X12.
+- **API (recommended for this skill):** Deterministic, supports JSON and raw X12.
 - **SFTP:** Good when your system already produces X12 files.
 - **Portal UI:** Useful for manual QA/debugging and operational workflows.
 
-For this skill, default to API-first behavior and deterministic scripts for validation, submission, polling, and response parsing.
+For this skill, default to API-first behavior with direct HTTP calls for validation, submission, polling, and response parsing.
 
 ## Claim lifecycle
 
 ```mermaid
 flowchart TD
-  claimBuild["Build claim payload (JSON or X12)"] --> precheck["Local validation script checks payload"]
+  claimBuild["Build claim payload (JSON or X12)"] --> precheck["Validate payload locally before submission"]
   precheck --> submit["Submit to Stedi API"]
   submit --> stediEdits["Stedi repairs/edits/validation"]
   stediEdits -->|Accepted| routeToPayer["Routed to payer"]

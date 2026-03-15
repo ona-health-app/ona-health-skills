@@ -79,7 +79,7 @@ Use with a `test_` API key. Do NOT change subscriber values — Stedi's PII dete
 }
 ```
 
-Run via: `python3 check_eligibility.py test`
+To test, POST this exact payload to the eligibility endpoint with a `test_` API key.
 
 ---
 
@@ -126,7 +126,7 @@ Filter by `inPlanNetworkIndicator: "Yes"` to get in-network numbers.
 
 ---
 
-## Structured output from `check_eligibility.py`
+## Structured output format
 
 ```json
 {
@@ -154,14 +154,7 @@ Filter by `inPlanNetworkIndicator: "Yes"` to get in-network numbers.
 
 ### Dependent patient (on parent's or spouse's plan)
 
-Move the patient to the `dependents` array; the policyholder stays in `subscriber`. CLI:
-
-```bash
-python3 check_eligibility.py check \
-  --payer-id 60054 --npi 1467892345 --provider-name "Ona Health" \
-  --member-id HOLDER123 --subscriber-first John --subscriber-last Smith --subscriber-dob 19800101 \
-  --dependent-first Jane --dependent-last Smith --dependent-dob 20040404
-```
+Move the patient to the `dependents` array; the policyholder stays in `subscriber`. Use the dependent check template from `assets/eligibility-check/dependent_check_template.json` and fill in the policyholder fields in `subscriber` and the patient fields in `dependents`.
 
 ### Medicare (payer ID: `CMS`)
 

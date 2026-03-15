@@ -57,7 +57,7 @@ Use same keys as production:
 - service-line control number for line-level mapping
 - transaction IDs for retrieval operations
 
-The test environment should prove that your deterministic scripts can:
+The test environment should prove that your workflow can:
 - submit
 - discover inbound responses
 - retrieve reports

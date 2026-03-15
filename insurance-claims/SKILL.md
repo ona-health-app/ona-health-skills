@@ -25,7 +25,7 @@ Do not instruct clinicians to edit `.env`, export env vars, install dependencies
 
 ## Operating principles
 
-1. Use **Stedi API + deterministic scripts** for validations, submissions, status checks, and retrieval workflows.
+1. Use **Stedi API calls directly** (via HTTP requests with your available tools) for validations, submissions, status checks, and retrieval workflows.
 2. Prefer structured JSON inputs/outputs. Avoid ad-hoc, ambiguous steps.
 3. Run a **requirements preflight** before claim actions (payer support, enrollment status, provider identifiers).
 4. Fail fast with actionable remediation steps when prerequisites are not met.
@@ -42,7 +42,7 @@ Then read only what is needed:
 
 When the user asks to check eligibility, verify coverage, or anything related to 270/271:
 
-1. **Always start with:** `references/stedi-eligibility.md` — quick-reference for payer IDs, STCs, response parsing, and the `check_eligibility.py` script interface.
+1. **Always start with:** `references/stedi-eligibility.md` — quick-reference for payer IDs, STCs, response parsing, and the API call interface.
 
 2. **For building or debugging raw API calls:** `references/eligibility-check/eligibility-api-reference.md` — comprehensive endpoint docs including every request field, response field, and interpretation guide.
 
@@ -78,7 +78,7 @@ When the task is `check_eligibility`, follow this sequence:
 ### 1. Gather required information
 
 Collect from the user (or from available context):
-- **Payer ID** — resolve from insurance card or payer name. Use `references/stedi-eligibility.md` for common IDs, or `scripts/lookup_payer.py` to search.
+- **Payer ID** — resolve from insurance card or payer name. Use `references/stedi-eligibility.md` for common IDs, or call the Payers API (`GET https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/payers`) to search.
 - **Provider NPI** — 10-digit National Provider Identifier.
 - **Provider name** — organization or individual name.
 - **Patient info** — at minimum: `memberId`, `firstName`, `lastName`, `dateOfBirth`. All four together guarantee a payer response.
@@ -104,7 +104,7 @@ Read `references/eligibility-check/provider-requirements.md` for the target paye
 
 ### 4. Execute the check
 
-Use the `check_eligibility.py` script for standard checks, or build a raw API call using `references/eligibility-check/eligibility-api-reference.md` for advanced scenarios.
+Make a direct HTTP POST to the Stedi eligibility endpoint using the appropriate template from `assets/eligibility-check/`. Refer to `references/eligibility-check/eligibility-api-reference.md` for full field details and advanced scenarios.
 
 ### 5. Interpret the response
 
@@ -139,15 +139,13 @@ Follow this sequence unless user explicitly requests otherwise.
    - If any check fails, stop and return deterministic remediation.
    - Do not ask clinicians to choose an environment.
 
-3. **Use script stubs/interfaces (or real implementation when present)**
-   - `scripts/check_eligibility.py` ← real implementation, makes live API call
-   - `scripts/validate_claim.py`
-   - `scripts/submit_claim.py`
-   - `scripts/check_claim_status.py`
-   - `scripts/lookup_payer.py`
-   - `scripts/retrieve_277ca.py`
-   - `scripts/retrieve_835era.py`
-   - `scripts/poll_transactions.py`
+3. **Execute via direct Stedi API calls**
+   - Make HTTP requests using your available tools (e.g., `curl`, `fetch`, or any HTTP client).
+   - Use the endpoint, headers, and payload structure documented in the relevant reference files.
+   - For eligibility: `POST https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/eligibility/v3`
+   - For claims: use the appropriate endpoint per claim type (see `references/stedi-submitting-claims.md`)
+   - For payer lookup: `GET https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/payers`
+   - For claim status, 277CA retrieval, 835 ERA retrieval, and polling: use the corresponding Stedi API endpoints.
 
 4. **Correlate all transactions**
    - Primary key: `patientControlNumber`.
@@ -163,14 +161,12 @@ Follow this sequence unless user explicitly requests otherwise.
 - Switch to test behavior only when the user explicitly asks for test mode, dry run, sandbox, or validation-only execution.
 - Keep this automatic; do not ask clinicians to choose between technical environments.
 
-## Script usage contract
+## Expected response formats
 
-Use these interfaces unless user requests a different shape.
+When presenting results to the user, normalize API responses into these structured shapes unless the user requests a different format.
 
-- `check_eligibility.py` — **real API call** (270/271 eligibility)
-  - Quick usage: `python3 check_eligibility.py test` (sandbox, no patient data needed)
-  - Live usage: `python3 check_eligibility.py check --payer-id <ID> --npi <NPI> --provider-name <NAME> --member-id <MID> --subscriber-first <F> --subscriber-last <L> --subscriber-dob <YYYYMMDD> [--service-type-codes MH] [--dependent-first <F> --dependent-last <L> --dependent-dob <YYYYMMDD>]`
-  - Output:
+- **Eligibility check** (270/271):
+  - Parse the raw Stedi response and present:
     ```json
     {
       "coverageActive": true,
@@ -183,19 +179,15 @@ Use these interfaces unless user requests a different shape.
       "raw": {}
     }
     ```
-  - On error, returns `{ "coverageActive": false, "errors": [...], "raw": {} }`
+  - On error: `{ "coverageActive": false, "errors": [...], "raw": {} }`
   - For payer IDs, service type codes, AAA error codes, and edge cases (Medicare, Medi-Cal, dependents): read `references/stedi-eligibility.md`
 
-- `validate_claim.py`
-  - Input: JSON payload path
-  - Output:
-    ```json
-    { "valid": true, "errors": [], "warnings": [] }
-    ```
+- **Claim validation** (pre-submission):
+  - Validate the JSON payload locally against the required fields and format rules before calling the API.
+  - Present: `{ "valid": true, "errors": [], "warnings": [] }`
 
-- `submit_claim.py`
-  - Input: claim type (`professional|institutional|dental`), payload, optional test flag
-  - Output:
+- **Claim submission**:
+  - Present:
     ```json
     {
       "status": "SUCCESS",
@@ -205,8 +197,8 @@ Use these interfaces unless user requests a different shape.
     }
     ```
 
-- `check_claim_status.py`
-  - Output:
+- **Claim status check**:
+  - Present:
     ```json
     {
       "claims": [
@@ -215,8 +207,8 @@ Use these interfaces unless user requests a different shape.
     }
     ```
 
-- `lookup_payer.py`
-  - Output:
+- **Payer lookup**:
+  - Present:
     ```json
     {
       "payers": [
@@ -225,8 +217,8 @@ Use these interfaces unless user requests a different shape.
     }
     ```
 
-- `retrieve_277ca.py` / `retrieve_835era.py` / `poll_transactions.py`
-  - Return normalized, parser-friendly objects with deterministic fields.
+- **277CA / 835 ERA retrieval / transaction polling**:
+  - Present normalized, parser-friendly objects with deterministic fields.
 
 ## Required guardrails
 

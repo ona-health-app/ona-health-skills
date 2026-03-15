@@ -13,7 +13,7 @@
 
 ## API-first model
 
-For this skill, use Stedi APIs with deterministic scripts. Prefer JSON endpoints so scripts can validate structured payloads before submit and parse structured responses after submit.
+For this skill, use Stedi APIs with direct HTTP calls. Prefer JSON endpoints so you can validate structured payloads before submission and parse structured responses after submission.
 
 Stedi translates JSON to HIPAA X12 for payer routing and returns JSON responses.
 
@@ -28,7 +28,7 @@ Use payer ID (`tradingPartnerServiceId`) from Payer Network/Payers API.
 
 ## Required headers
 
-Every submission script should include:
+Every submission request should include:
 
 - `Authorization: <STEDI_API_KEY>`
 - `Content-Type: application/json`
@@ -57,7 +57,7 @@ Commonly required inside `claimInformation`:
 
 ## Professional claim skeleton (837P)
 
-Use this as a starter payload shape for deterministic scripts.
+Use this as a starter payload shape for claim submissions.
 
 ```json
 {
@@ -149,7 +149,7 @@ For test submissions, set:
 - Includes dental-specific procedure context (for example tooth/surface/oral cavity structures where applicable).
 - Uses ADA-oriented coding patterns.
 
-Implementation note: keep separate payload schema files per claim type in scripts/templates to avoid mixed-field errors.
+Implementation note: use the separate payload templates per claim type from `assets/` to avoid mixed-field errors.
 
 ## Conditional requirements
 
@@ -162,8 +162,8 @@ Example pattern:
 - `dependent` may be omitted when patient is subscriber.
 - A provider supervisory structure may be required only in supervised care situations.
 
-Script design recommendation:
-- Perform local pre-flight validation and classify failures as:
+Pre-flight validation recommendation:
+- Validate the payload locally before submission and classify failures as:
   - `missing_required`
   - `missing_conditional`
   - `format_error`

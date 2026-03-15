@@ -46,11 +46,11 @@ Use Stedi Payer Network as the source of truth for:
 Practical lookup sequence:
 1. Search by payer name and known aliases.
 2. Confirm supported transaction type for current workflow.
-3. Choose canonical payer ID (or approved alias) for deterministic scripts.
+3. Choose canonical payer ID (or approved alias) for API calls.
 
 ## Payers API usage pattern
 
-Use API-based payer lookup in script flows:
+Use API-based payer lookup in workflows:
 - search candidate payer
 - fetch payer details
 - validate transaction support before submit
